@@ -1,8 +1,11 @@
-# Quartus generated files
+# Quartus generated directories
 db/
 incremental_db/
-output_files/
 greybox_tmp/
+
+# Quartus output files
+output_files/*
+!output_files/*.sof
 
 # Quartus temporary / backup files
 *.bak
