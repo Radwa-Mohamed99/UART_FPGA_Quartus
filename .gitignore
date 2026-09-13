@@ -1,0 +1,37 @@
+# Quartus generated files
+db/
+incremental_db/
+output_files/
+greybox_tmp/
+
+# Quartus temporary / backup files
+*.bak
+*.qws
+
+# Compilation / simulation generated files
+*.rpt
+*.summary
+*.smsg
+*.qmsg
+*.logdb
+*.hdb
+*.cdb
+*.rdb
+*.ddb
+*.ammdb
+*.dfp
+*.kpt
+*.map
+*.pin
+*.jdi
+*.done
+*.asm
+*.cdf
+*.sld
+
+# SignalTap generated files
+*.stp
+
+# OS files
+.DS_Store
+Thumbs.db
