@@ -1,0 +1,16 @@
+CLK   >>       PIN_P11 
+
+///////////////////////// Input mapped to switches ///////////////
+
+RST_N   >> SW0 - PIN_C10 
+
+///////////////////////// Outputs mapped to LEDs ///////////////
+
+TX_OUT_V      >> LED0 -- PIN_A8  
+parity_error  >> LED1 -- PIN_A9 
+framing_error >> LED2 -- PIN_A10 
+
+/////////////////////////////// GPIOs /////////////////////////
+
+uart_rx  >> PIN_W10
+uart_tx  >> PIN_V10

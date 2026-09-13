@@ -1,0 +1,64 @@
+`timescale 1ns / 1ps
+
+// =============================================================================
+// UART Loopback Top - DE-10 Lite (Intel MAX 10 10M50DAF484C7G)
+//
+// PLL (mypll)    : inclk0 = 50 MHz  ->  c0 = 3.684 MHz  (50M x 921 / 12500)
+// rx_clk         = PLL c0 (3.684 MHz), UART RX sampling clock
+// Prescale       = 32 (hardwired inside uart_loopback_wrapper)
+// baud           = rx_clk / Prescale = 3.684M / 32 = 115.125 kHz ~= 115200
+// tx_clk         = baud, derived inside uart_loopback_wrapper (rx_clk / 32)
+//
+// Reset: RST_N (KEY[0]) active low. The wrapper re-synchronizes it into each
+// clock domain.
+//
+// Board connections (assign pins in the Quartus Pin Planner):
+//   CLOCK_50  -> 50 MHz oscillator
+//   RST_N     -> KEY[0]
+//   uart_tx   -> Arduino header D10 / Arduino_IO10 (PIN_AB19, FTDI RX)
+//   uart_rx   -> Arduino header D11 / Arduino_IO11 (PIN_AA19, FTDI TX)
+//   TX_OUT_V  -> LEDR[1]             (TX busy)
+//   parity_enable / parity_type = 0  (parity disabled, tied low)
+//   parity_error  -> LEDR[2] (or other), framing_error -> LEDR[3]
+// =============================================================================
+module top (
+    input  wire        CLOCK_50,    // 50 MHz board oscillator
+    input  wire        RST_N,       // KEY[0] active-low reset
+    // Serial interface
+    input  wire        uart_rx,     // from peer TX
+    output wire        uart_tx,     // to peer RX
+    // Status / control
+    output wire        TX_OUT_V,    // TX busy
+    output wire        parity_error,
+    output wire        framing_error
+);
+
+    // ---------------------------------------------------------------------
+    // PLL: 50 MHz -> 3.684 MHz (rx_clk). tx_clk (baud) is generated inside
+    // uart_loopback_wrapper as rx_clk / 32.
+    // ---------------------------------------------------------------------
+    wire        rx_clk;
+    (* keep = "true" *) wire tap_clk;   // 36.8 MHz SignalTap sampling clock (PLL c1)
+
+    MY_PLL U_PLL (
+        .inclk0 (CLOCK_50),
+        .c0     (rx_clk),
+        .c1     (tap_clk)
+    );
+
+    // ---------------------------------------------------------------------
+    // UART loopback wrapper
+    // ---------------------------------------------------------------------
+    uart_loopback_wrapper U_LOOPBACK (
+        .rx_clk        (rx_clk),
+        .RST_N         (RST_N),
+        .uart_rx       (uart_rx),
+        .uart_tx       (uart_tx),
+        .TX_OUT_V      (TX_OUT_V),
+		.parity_enable (1'b0),
+        .parity_type   (1'b0),
+        .parity_error  (parity_error),
+        .framing_error (framing_error)
+    );
+
+endmodule
